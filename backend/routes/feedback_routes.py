@@ -1,6 +1,6 @@
 import datetime
 from flask import Blueprint, jsonify, request
-from backend.config.db import feedback_collection
+from config.db import feedback_collection
 
 feedback_bp = Blueprint("feedback_bp", __name__)
 

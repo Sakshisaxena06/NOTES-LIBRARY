@@ -17,6 +17,7 @@ db = client["notesLibrary"]
 students_collection = db["students"]
 subjects_collection = db["subjects"]
 feedback_collection = db["feedback"]
+pdfs_collection = db["pdfs"]
 
 
 # --- Helpers ---

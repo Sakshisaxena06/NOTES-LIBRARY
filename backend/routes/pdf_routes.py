@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from flask import Blueprint, jsonify, request, send_from_directory, redirect
 from werkzeug.utils import secure_filename
-from backend.config.db import students_collection
+from config.db import students_collection, pdfs_collection
 
 import cloudinary
 import cloudinary.uploader
@@ -86,13 +86,9 @@ def api_upload_pdf():
     stored_name = f"{timestamp}_{secured_filename}"
     
     try:
-        # Save temporarily to disk because upload_large requires a path or a stream with context manager support
-        temp_path = os.path.join(UPLOAD_DIR, secured_filename)
-        file.save(temp_path)
-
-        # Upload to Cloudinary
-        upload_result = cloudinary.uploader.upload_large(
-            temp_path,
+        # Upload to Cloudinary directly from memory
+        upload_result = cloudinary.uploader.upload(
+            file,
             resource_type="auto",
             folder="notes_library",
             use_filename=True,
@@ -102,21 +98,13 @@ def api_upload_pdf():
         public_id = upload_result.get("public_id")
         file_size = upload_result.get("bytes", 0)
         
-        # Clean up temp file
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-
     except Exception as e:
         import traceback
         trace = traceback.format_exc()
         print("Cloudinary Upload Error:", e, flush=True)
-        # Try to clean up temp file if it failed
-        temp_path = os.path.join(UPLOAD_DIR, secured_filename)
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
         return jsonify({"error": f"Failed to upload to Cloudinary: {str(e)}", "trace": trace}), 500
 
-    # Save metadata locally as JSON
+    # Save metadata to MongoDB
     metadata = {
         "id": stored_name,
         "original_name": original_filename,
@@ -131,9 +119,7 @@ def api_upload_pdf():
         "public_id": public_id
     }
     
-    file_path = os.path.join(UPLOAD_DIR, stored_name + ".json")
-    with open(file_path, "w") as f:
-        json.dump(metadata, f)
+    pdfs_collection.insert_one(metadata)
 
     return jsonify({"success": True, "filename": stored_name, "original_name": original_filename, "url": secure_url})
 
@@ -142,27 +128,33 @@ def api_upload_pdf():
 def api_uploaded_pdfs():
     files = []
     
-    for f in os.listdir(UPLOAD_DIR):
-        if f.endswith(".json"):
-            file_path = os.path.join(UPLOAD_DIR, f)
-            try:
-                with open(file_path, "r") as file_obj:
-                    meta = json.load(file_obj)
-            except Exception:
-                continue
-            
-            if "cloudinary_url" in meta:
-                # New style (Cloudinary)
-                files.append(meta)
-            else:
-                # Old style metadata, actual file is f[:-5]
-                actual_filename = f[:-5]
-                if os.path.exists(os.path.join(UPLOAD_DIR, actual_filename)):
-                     files.append(get_upload_metadata(actual_filename))
-        elif allowed_file(f):
-            # Fallback if old file has no json
-            if not os.path.exists(os.path.join(UPLOAD_DIR, f + ".json")):
-                 files.append(get_upload_metadata(f))
+    # Fetch from MongoDB
+    mongo_files = list(pdfs_collection.find({}, {"_id": 0}))
+    files.extend(mongo_files)
+    
+    # Fallback to local files if UPLOAD_DIR exists (for backward compatibility locally)
+    if os.path.exists(UPLOAD_DIR):
+        for f in os.listdir(UPLOAD_DIR):
+            if f.endswith(".json"):
+                file_path = os.path.join(UPLOAD_DIR, f)
+                try:
+                    with open(file_path, "r") as file_obj:
+                        meta = json.load(file_obj)
+                except Exception:
+                    continue
+                
+                # Only add if not already in MongoDB
+                if not any(m.get("id") == meta.get("id") for m in mongo_files):
+                    if "cloudinary_url" in meta:
+                        files.append(meta)
+                    else:
+                        actual_filename = f[:-5]
+                        if os.path.exists(os.path.join(UPLOAD_DIR, actual_filename)):
+                            files.append(get_upload_metadata(actual_filename))
+            elif allowed_file(f):
+                if not os.path.exists(os.path.join(UPLOAD_DIR, f + ".json")):
+                    if not any(m.get("id") == f for m in mongo_files):
+                        files.append(get_upload_metadata(f))
                  
     # Sort by timestamp descending
     files.sort(key=lambda x: x.get("timestamp", 0), reverse=True)
@@ -184,28 +176,39 @@ def api_delete_pdf(filename):
 
     deleted_anything = False
     
-    # Try new style (Cloudinary)
-    meta_path = os.path.join(UPLOAD_DIR, filename + ".json")
-    if os.path.exists(meta_path):
-        try:
-            with open(meta_path, "r") as f:
-                meta = json.load(f)
-            public_id = meta.get("public_id")
-            if public_id:
-                try:
-                    cloudinary.uploader.destroy(public_id)
-                except Exception as e:
-                    print("Cloudinary destroy error:", e)
-        except Exception:
-            pass
-        os.remove(meta_path)
+    # Check MongoDB first
+    meta = pdfs_collection.find_one({"id": filename})
+    if meta:
+        public_id = meta.get("public_id")
+        if public_id:
+            try:
+                cloudinary.uploader.destroy(public_id)
+            except Exception as e:
+                print("Cloudinary destroy error:", e)
+        pdfs_collection.delete_one({"_id": meta["_id"]})
         deleted_anything = True
-        
-    # Try old style (Local file)
-    file_path = os.path.join(UPLOAD_DIR, filename)
-    if os.path.exists(file_path) and os.path.isfile(file_path):
-        os.remove(file_path)
-        deleted_anything = True
+    else:
+        # Fallback to local files
+        meta_path = os.path.join(UPLOAD_DIR, filename + ".json")
+        if os.path.exists(meta_path):
+            try:
+                with open(meta_path, "r") as f:
+                    local_meta = json.load(f)
+                public_id = local_meta.get("public_id")
+                if public_id:
+                    try:
+                        cloudinary.uploader.destroy(public_id)
+                    except Exception as e:
+                        print("Cloudinary destroy error:", e)
+            except Exception:
+                pass
+            os.remove(meta_path)
+            deleted_anything = True
+            
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            os.remove(file_path)
+            deleted_anything = True
 
     if not deleted_anything:
         return jsonify({"error": "File not found."}), 404
@@ -224,13 +227,22 @@ def api_delete_pdf(filename):
 def serve_pdf_by_id(pdf_id):
     filename = os.path.basename(pdf_id)
     
-    # Check new style
+    # Check MongoDB first
+    meta = pdfs_collection.find_one({"id": filename})
+    if meta:
+        url = meta.get("cloudinary_url")
+        if url:
+            if request.args.get("download") == "true" and "/upload/" in url:
+                url = url.replace("/upload/", "/upload/fl_attachment/")
+            return redirect(url)
+            
+    # Check fallback local files
     meta_path = os.path.join(UPLOAD_DIR, filename + ".json")
     if os.path.exists(meta_path):
         try:
             with open(meta_path, "r") as f:
-                meta = json.load(f)
-            url = meta.get("cloudinary_url")
+                local_meta = json.load(f)
+            url = local_meta.get("cloudinary_url")
             if url:
                 if request.args.get("download") == "true" and "/upload/" in url:
                     url = url.replace("/upload/", "/upload/fl_attachment/")
@@ -238,7 +250,6 @@ def serve_pdf_by_id(pdf_id):
         except Exception:
             pass
 
-    # Check old style
     file_path = os.path.join(UPLOAD_DIR, filename)
     if os.path.exists(file_path) and os.path.isfile(file_path):
         return send_from_directory(UPLOAD_DIR, filename)

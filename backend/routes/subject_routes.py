@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from backend.config.db import subjects_collection
+from config.db import subjects_collection
 
 subject_bp = Blueprint("subject_bp", __name__)
 

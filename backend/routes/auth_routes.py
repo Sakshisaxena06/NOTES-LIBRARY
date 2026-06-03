@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
-from backend.config.db import students_collection, load_students
+from config.db import students_collection, load_students
 
 auth_bp = Blueprint("auth_bp", __name__)
 

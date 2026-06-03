@@ -1502,20 +1502,52 @@ h4 {
   .notes-grid {
     grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
   }
+  /* ── Compact Filter Bar ── */
   .filter-bar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom-width: 2px;
   }
   .filter-pills {
-    justify-content: flex-start;
+    gap: 0.35rem;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
     flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-pill {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-radius: 999px;
   }
   .filter-dropdowns {
-    justify-content: space-between;
+    gap: 0.4rem !important;
     width: 100%;
+    flex-wrap: wrap;
   }
+  .select-wrapper {
+    flex: 1 1 calc(33% - 0.3rem);
+    min-width: 0;
+  }
+  .filter-select {
+    width: 100%;
+    font-size: 0.72rem;
+    padding: 0.3rem 1.4rem 0.3rem 0.5rem;
+  }
+  .select-wrapper i {
+    right: 0.4rem;
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+  .sort-by-container {
+    font-size: 0.75rem;
+    gap: 0.3rem;
+  }
+  /* ── Other Elements ── */
   .stat-card {
     min-width: 45%;
     flex: 1 1 45%;
@@ -1537,6 +1569,24 @@ h4 {
 }
 
 @media (max-width: 480px) {
+  .filter-bar {
+    gap: 0.4rem;
+    padding-bottom: 0.5rem;
+  }
+  .filter-pill {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.68rem;
+  }
+  .filter-select {
+    font-size: 0.68rem;
+    padding: 0.25rem 1.2rem 0.25rem 0.4rem;
+  }
+  .select-wrapper {
+    flex: 1 1 calc(50% - 0.2rem);
+  }
+  .sort-by-container {
+    font-size: 0.7rem;
+  }
   .stat-card {
     min-width: 100%;
     flex: 1 1 100%;
@@ -1553,25 +1603,8 @@ h4 {
   }
 }
 
-/* Additional responsiveness for Filters and Modals on smaller screens */
+/* Profile modal responsiveness */
 @media (max-width: 768px) {
-  /* Make filter dropdowns stack or wrap */
-  .filter-dropdowns {
-    flex-wrap: wrap;
-    gap: 0.75rem !important;
-    width: 100%;
-  }
-  .select-wrapper {
-    flex: 1 1 calc(50% - 0.5rem);
-    min-width: 120px;
-  }
-  .filter-select {
-    width: 100%;
-    font-size: 0.85rem;
-    padding: 0.5rem 1.5rem 0.5rem 0.75rem;
-  }
-  
-  /* Ensure profile modal details and note view modals stack correctly */
   .modal-content {
     padding: 1.25rem !important;
     margin: 0.5rem !important;
@@ -1579,7 +1612,6 @@ h4 {
     max-width: 100% !important;
     max-height: 95vh !important;
   }
-  
   .profile-info-list {
     gap: 0.5rem !important;
   }
@@ -1595,17 +1627,6 @@ h4 {
   .profile-value {
     font-size: 0.9rem !important;
     word-break: break-all;
-  }
-}
-
-@media (max-width: 480px) {
-  /* For very small devices, stack filter dropdowns vertically */
-  .select-wrapper {
-    flex: 1 1 100%;
-  }
-  .sort-by-container {
-    flex: 1 1 100%;
-    justify-content: flex-start;
   }
 }
 

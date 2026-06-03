@@ -11,6 +11,12 @@ CORS(app)
 load_dotenv(os.path.join(ROOT_DIR, ".env"))
 
 register_routes(app)
+@app.route("/")
+def home():
+    return {
+        "status": "success",
+        "message": "Backend is running"
+    }
 
 @app.route("/api/health")
 def health():

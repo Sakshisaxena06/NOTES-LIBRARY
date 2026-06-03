@@ -1477,3 +1477,78 @@ h4 {
   line-height: 1.5;
   white-space: pre-wrap;
 }
+
+/* Global Responsive Enhancements */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 1050;
+    width: 280px;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+  }
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  .main-wrapper {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+  .menu-toggle-btn {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .notes-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-pills {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    flex-wrap: nowrap;
+  }
+  .filter-dropdowns {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .stat-card {
+    min-width: 45%;
+    flex: 1 1 45%;
+  }
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  .header-actions {
+    gap: 0.5rem;
+  }
+  .profile-avatar-large {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-card {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+  .dashboard-content {
+    padding: 1rem;
+  }
+  .welcome-section h1 {
+    font-size: 1.5rem;
+  }
+  .pdf-badge {
+    width: 3rem;
+    height: 3rem;
+  }
+}

@@ -831,8 +831,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="modal-content" style="max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; margin: 0; padding: 0; border-radius: 0; border: none; display: flex; flex-direction: column; overflow: hidden; background-color: var(--bg-main);">
         
         <!-- Full Screen Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-card); border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;">
-          <div style="display: flex; align-items: center; gap: 1rem;">
+        <div class="preview-header">
+          <div class="preview-header-group">
             <button class="btn btn-outline" id="previewBackBtn" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem;">
               <i data-lucide="arrow-left" style="width:1.2rem;height:1.2rem;"></i> Back
             </button>
@@ -841,7 +841,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <span style="font-size: 0.85rem; color: var(--text-muted);">${note.category}  • Uploaded by ${note.author}</span>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 1rem;">
+          <div class="preview-header-group">
             <button class="btn btn-outline" id="previewShareBtn">
               <i data-lucide="share-2" style="width:1.2rem;height:1.2rem;"></i> Share
             </button>

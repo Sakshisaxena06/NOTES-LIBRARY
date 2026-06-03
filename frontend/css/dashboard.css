@@ -1552,3 +1552,96 @@ h4 {
     height: 3rem;
   }
 }
+
+/* Additional responsiveness for Filters and Modals on smaller screens */
+@media (max-width: 768px) {
+  /* Make filter dropdowns stack or wrap */
+  .filter-dropdowns {
+    flex-wrap: wrap;
+    gap: 0.75rem !important;
+    width: 100%;
+  }
+  .select-wrapper {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 120px;
+  }
+  .filter-select {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.5rem 1.5rem 0.5rem 0.75rem;
+  }
+  
+  /* Ensure profile modal details and note view modals stack correctly */
+  .modal-content {
+    padding: 1.25rem !important;
+    margin: 0.5rem !important;
+    width: 95% !important;
+    max-width: 100% !important;
+    max-height: 95vh !important;
+  }
+  
+  .profile-info-list {
+    gap: 0.5rem !important;
+  }
+  .profile-info-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem;
+    padding: 0.5rem 0 !important;
+  }
+  .profile-label {
+    font-size: 0.75rem !important;
+  }
+  .profile-value {
+    font-size: 0.9rem !important;
+    word-break: break-all;
+  }
+}
+
+@media (max-width: 480px) {
+  /* For very small devices, stack filter dropdowns vertically */
+  .select-wrapper {
+    flex: 1 1 100%;
+  }
+  .sort-by-container {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Note Viewer Modal Specific Styling */
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  z-index: 10;
+  gap: 1rem;
+}
+.preview-header-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+  .preview-header-group {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .preview-header-group:last-child {
+    margin-top: 0.5rem;
+    justify-content: flex-start;
+  }
+  .preview-header h2 {
+    font-size: 1.1rem !important;
+  }
+}

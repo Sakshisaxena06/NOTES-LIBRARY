@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function fetchSubjects() {
     try {
-      const response = await fetch("/api/subjects");
+      const response = await fetch(window.API_BASE_URL + "/api/subjects");
       const data = await response.json();
       if (data.success) {
         subjects = data.subjects;
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     try {
-      const response = await fetch("/api/subjects", {
+      const response = await fetch(window.API_BASE_URL + "/api/subjects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function fetchUploadedNotes() {
     try {
-      const response = await fetch("/api/uploaded-pdfs");
+      const response = await fetch(window.API_BASE_URL + "/api/uploaded-pdfs");
       if (!response.ok) {
         throw new Error("Failed to fetch uploaded notes");
       }
@@ -409,7 +409,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let totalPdfCount = 0;
     try {
-      const response = await fetch("/api/total-pdfs-count");
+      const response = await fetch(window.API_BASE_URL + "/api/total-pdfs-count");
       const data = await response.json();
       if (data.success) {
         totalPdfCount = data.total_pdfs;
@@ -1120,7 +1120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     container.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted);">Loading feedback...</div>';
     try {
-      const res = await fetch("/api/feedback");
+      const res = await fetch(window.API_BASE_URL + "/api/feedback");
       const data = await res.json();
       if (data.success) {
         if (data.feedback.length === 0) {
@@ -1261,7 +1261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         formData.append("semester", semester);
 
         // Upload to backend API
-        const response = await fetch("/api/upload-pdf", {
+        const response = await fetch(window.API_BASE_URL + "/api/upload-pdf", {
           method: "POST",
           body: formData,
         });

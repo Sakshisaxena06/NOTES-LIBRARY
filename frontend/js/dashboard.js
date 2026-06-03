@@ -332,7 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!rollNo) return;
 
     try {
-      const res = await fetch(`/api/student/profile/${rollNo}`);
+      const res = await fetch(`${window.API_BASE_URL}/api/student/profile/${rollNo}`);
       const data = await safeJsonParse(res);
       if (data && data.success) {
         document.getElementById("profileRollNo").innerText = data.rollno || "N/A";
@@ -397,7 +397,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       try {
-        const res = await fetch(`/api/student/change-password/${rollNo}`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/student/change-password/${rollNo}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -434,7 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function fetchSubjects() {
     try {
       console.log("[dashboard] fetchSubjects called");
-      const res = await fetch("/api/subjects");
+      const res = await fetch(window.API_BASE_URL + "/api/subjects");
       if (!res.ok) throw new Error("Failed to fetch subjects: " + res.status);
       const data = await res.json();
       console.log("[dashboard] API response:", data);
@@ -602,7 +602,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // This ensures note.id, note.fileName, and the PDF URL all use the same value.
   async function fetchUploadedNotes() {
     try {
-      const response = await fetch("/api/uploaded-pdfs");
+      const response = await fetch(window.API_BASE_URL + "/api/uploaded-pdfs");
       const data = await safeJsonParse(response);
       if (data && data.success) {
         return data.files.map((file) => {
@@ -655,7 +655,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 8. Load student favourites & downloads
   async function loadStudentStats() {
     try {
-      const res = await fetch(`/api/student-stats/${studentRollNo}`);
+      const res = await fetch(`${window.API_BASE_URL}/api/student-stats/${studentRollNo}`);
       const data = await safeJsonParse(res);
       if (data && data.success) {
         const statsRes = await fetch(
@@ -683,7 +683,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const updateStats = async () => {
     try {
       if (totalNotesStat) {
-        const res = await fetch("/api/total-pdfs-count");
+        const res = await fetch(window.API_BASE_URL + "/api/total-pdfs-count");
         const data = await safeJsonParse(res);
         totalNotesStat.innerText = data && data.success ? data.total_pdfs : 0;
       }
@@ -708,7 +708,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const action = isFav ? "remove_fav" : "add_fav";
 
     try {
-      const res = await fetch(`/api/student-stats/${studentRollNo}`, {
+      const res = await fetch(`${window.API_BASE_URL}/api/student-stats/${studentRollNo}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, filename: id }),
@@ -752,7 +752,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const wasDownloadedBefore = userDownloads.includes(id);
     if (!wasDownloadedBefore) {
       try {
-        const res = await fetch(`/api/student-stats/${studentRollNo}`, {
+        const res = await fetch(`${window.API_BASE_URL}/api/student-stats/${studentRollNo}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action: "add_download", filename: id }),
@@ -1222,7 +1222,7 @@ await renderNotes();
         const name = document.getElementById("feedbackName").value;
         
         try {
-          const res = await fetch("/api/feedback", {
+          const res = await fetch(window.API_BASE_URL + "/api/feedback", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name, rollno: studentRollNo, description: desc })

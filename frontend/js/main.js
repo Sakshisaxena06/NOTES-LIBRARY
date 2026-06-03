@@ -312,7 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fetchStudentNameByRoll = async (rollNo) => {
     if (!rollNo || isLoginMode) return;
     try {
-      const response = await fetch(`/api/student/${encodeURIComponent(rollNo.trim())}`);
+      const response = await fetch(`${window.API_BASE_URL}/api/student/${encodeURIComponent(rollNo.trim())}`);
       if (!response.ok) {
         studentNameField.value = "";
         return;
@@ -427,7 +427,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* 6. Fetch and display actual PDF count on home page */
   const updateSubjectNoteCounts = async () => {
     try {
-      const response = await fetch("/api/total-pdfs-count");
+      const response = await fetch(window.API_BASE_URL + "/api/total-pdfs-count");
       const data = await response.json();
 
       if (data.success && data.total_pdfs !== undefined) {

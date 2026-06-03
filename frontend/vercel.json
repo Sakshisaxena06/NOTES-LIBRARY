@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://your-backend-domain.com/api/$1"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "https://your-backend-domain.com/uploads/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/$1"
+    }
+  ]
+}

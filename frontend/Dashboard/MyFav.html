@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Favourites - Notes Library</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Dashboard Stylesheet -->
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+
+     <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <style>
+      /* List View Override for My Favourites Page */
+      .notes-grid {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 0 !important;
+          background: var(--bg-card);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--card-shadow);
+          padding: 0.5rem 1.5rem !important;
+      }
+
+      .note-card {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          padding: 1.1rem 0 !important;
+          padding-right: 3rem !important;
+          border: none !important;
+          border-bottom: 1px solid var(--border) !important;
+          box-shadow: none !important;
+          border-radius: 0 !important;
+          position: relative !important;
+          height: auto !important;
+          background: transparent !important;
+          gap: 0 !important;
+      }
+
+      .note-card:hover {
+          transform: none !important;
+          background: rgba(99, 102, 241, 0.03) !important;
+      }
+
+      .note-card:last-child {
+          border-bottom: none !important;
+      }
+
+      /* Hide the header buttons div (they held fav) */
+      .note-card-header {
+          padding: 0 !important;
+          margin: 0 !important;
+      }
+
+      /* Hide the fav/delete buttons at top right - we move fav to corner */
+      .note-card-header > div:last-child {
+          display: none !important;
+      }
+
+      /* The fav heart — placed absolutely at top-right corner of the card */
+      .btn-fav {
+          position: absolute !important;
+          top: 50% !important;
+          right: 0 !important;
+          transform: translateY(-50%) !important;
+          background: transparent !important;
+          border: none !important;
+          color: #ef4444 !important;
+          width: 2rem !important;
+          height: 2rem !important;
+      }
+      .btn-fav i {
+          fill: #ef4444 !important;
+          color: #ef4444 !important;
+      }
+      .btn-fav:hover {
+          background: rgba(239, 68, 68, 0.08) !important;
+          border-radius: 50% !important;
+      }
+
+      /* Re-inject fav button from footer into corner via CSS trick */
+      .note-card-footer .btn-fav-corner {
+          position: absolute !important;
+          top: 50% !important;
+          right: 0 !important;
+          transform: translateY(-50%) !important;
+      }
+
+      .pdf-badge {
+          width: 3.2rem !important;
+          height: 3.2rem !important;
+          min-width: 3.2rem !important;
+          border-radius: 12px !important;
+          box-shadow: none !important;
+          margin-right: 1.25rem !important;
+          background: rgba(239, 68, 68, 0.1) !important;
+      }
+
+      .pdf-badge i {
+          color: #ef4444 !important;
+          width: 1.5rem !important;
+          height: 1.5rem !important;
+      }
+
+      html.dark-theme .pdf-badge {
+          background: rgba(239, 68, 68, 0.15) !important;
+      }
+
+      .note-card-body {
+          padding: 0 !important;
+          flex: 1;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          gap: 0.3rem !important;
+      }
+
+      .note-title {
+          font-size: 1rem !important;
+          margin: 0 !important;
+          -webkit-line-clamp: 1 !important;
+      }
+
+      .category-tag {
+          background: transparent !important;
+          color: var(--text-light) !important;
+          padding: 0 !important;
+          font-size: 0.82rem !important;
+          font-weight: 500 !important;
+      }
+
+      .note-author-info {
+          display: none !important;
+      }
+
+      /* Show the footer, but only the View button */
+      .note-card-footer {
+          display: flex !important;
+          align-items: center !important;
+          padding: 0 !important;
+          border: none !important;
+          gap: 0.5rem !important;
+          margin-left: 0.75rem !important;
+      }
+
+      /* Hide download and share buttons */
+      .note-card-footer .download-btn,
+      .note-card-footer .card-action-btn:not(:first-child) {
+          display: none !important;
+      }
+
+      /* Style the View button */
+      .note-card-footer .card-action-btn:first-child {
+          display: flex !important;
+          align-items: center !important;
+          gap: 0.4rem !important;
+          padding: 0.4rem 0.85rem !important;
+          font-size: 0.82rem !important;
+          font-weight: 600 !important;
+          color: var(--primary) !important;
+          background: var(--primary-light) !important;
+          border: 1px solid transparent !important;
+          border-radius: var(--radius-full) !important;
+          cursor: pointer !important;
+          transition: var(--transition) !important;
+          white-space: nowrap !important;
+      }
+
+      .note-card-footer .card-action-btn:first-child:hover {
+          background: var(--primary) !important;
+          color: #fff !important;
+      }
+    </style>
+
+    <!-- Immediately apply saved theme to prevent flash of wrong theme on page load -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("theme");
+          if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            document.documentElement.classList.add("dark-theme");
+          }
+        } catch (e) { /* localStorage unavailable — skip */ }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+          <i data-lucide="book-open"></i>
+          <span>Notes Library</span>
+        </a>
+
+        <ul class="sidebar-menu">
+          <li class="menu-label">Main Navigation</li>
+          <li>
+            <a href="dashboard.html" class="sidebar-link">
+              <i data-lucide="home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="AllNotes.html" class="sidebar-link">
+              <i data-lucide="file-text"></i>
+              <span>All Notes</span>
+            </a>
+          </li>
+          <li>
+            <a href="MyFav.html" class="sidebar-link active">
+              <i data-lucide="heart"></i>
+              <span>My Favourites</span>
+            </a>
+          </li>
+          <li>
+            <a href="MyDownloads.html" class="sidebar-link">
+              <i data-lucide="download"></i>
+              <span>My Downloads</span>
+            </a>
+          </li>
+     
+
+          <!-- <li class="menu-label">Categories</li>
+          <ul id="categoryList"></ul>
+          <li>
+            <a href="#" class="sidebar-link" data-category="all">
+              <i data-lucide="more-horizontal"></i>
+              <span>All Subjects</span>
+            </a>
+          </li>
+        </ul> -->
+
+        
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="main-wrapper">
+        <!-- Top Navigation Bar -->
+        <header class="header-nav">
+          <!-- Mobile Sidebar Toggle -->
+          <button
+            class="icon-btn menu-toggle-btn"
+            id="sidebarToggle"
+            aria-label="Toggle Menu"
+          >
+            <i data-lucide="menu"></i>
+          </button>
+
+          <!-- Search Box -->
+          <div class="search-bar">
+            <i data-lucide="search"></i>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search notes by title, subject, or tag..."
+            />
+          </div>
+
+          <!-- Header Control Center -->
+          <div class="header-actions">
+            <!-- Notification Bell -->
+            <div class="notification-wrapper">
+              <button class="icon-btn" id="notificationBtn" aria-label="Notifications">
+                <i data-lucide="bell"></i>
+                <span class="badge-dot" id="notificationBadge"></span>
+              </button>
+              <div class="notification-panel" id="notificationPanel">
+                <div class="notification-panel-header">
+                  <span>Notifications</span>
+                  <div style="display:flex; gap:0.4rem; align-items:center;">
+                    <button class="notification-mark-read" id="markReadBtn">Mark as read</button>
+                    <button class="notification-mark-read" id="clearAllNotifBtn" title="Clear all notifications" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">✕</button>
+                  </div>
+                </div>
+                <div class="notification-panel-list" id="notificationList">
+                  <div class="notification-empty">No notifications yet.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bright / Dark Theme Button -->
+            <button
+              class="icon-btn theme-toggle"
+              id="themeToggleBtn"
+              aria-label="Toggle Theme"
+            >
+              <i data-lucide="moon" id="themeIcon"></i>
+            </button>
+
+            <!-- Student Profile Menu -->
+            <div class="user-profile" id="userProfileBtn">
+              <div class="user-avatar" id="avatarLetter">A</div>
+              <div class="user-info">
+                <span class="user-name" id="userNameDisplay">Anjali</span>
+                <span class="user-role">Student</span>
+              </div>
+              <i data-lucide="chevron-down" class="chevron"></i>
+
+              <!-- Dropdown Options -->
+              <div class="profile-dropdown" id="profileDropdown">
+                <a
+                  href="#"
+                  class="dropdown-item"
+                  onclick="showProfileModal()"
+                >
+                  <i data-lucide="user"></i> My Profile
+                </a>
+                
+               
+                <a href="#" class="dropdown-item logout" id="logoutBtn">
+                  <i data-lucide="log-out"></i> Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Main Container -->
+        <main class="dashboard-content">
+          <!-- Section Header -->
+          <div class="welcome-section">
+            <div class="welcome-info">
+              <h1>My Favourites</h1>
+              <p>
+                Quick access to all study guides and notes you have bookmarked.
+              </p>
+            </div>
+
+            <!-- Stats count preview (hidden but kept for sync) -->
+            <div class="stats-container" style="display: none">
+              <div class="stat-card">
+                <div class="stat-value" id="totalNotesStat"></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="favouritesStat"></div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="downloadsStat"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filters and Sort Options Bar -->
+          <div class="filter-bar">
+            <div class="filter-pills">
+              <button class="filter-pill active" data-filter="all">All</button>
+              
+            </div>
+
+            <div class="filter-dropdowns">
+              <div class="select-wrapper">
+                <select id="subjectSelect" class="filter-select" data-api-source="/api/subjects">
+                  <option value="all">All Subjects</option>
+                  <option value="" disabled style="display:none;">Loading subjects from API...</option>
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+
+              <div class="select-wrapper">
+                <select id="semesterSelect" class="filter-select">
+                  <option value="all">All Semester</option>
+                  <option value="5th Semester">5th Semester</option>
+                  <option value="6th Semester">6th Semester</option>
+                  <option value="7th Semester">7th Semester</option>
+                
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+
+              <div class="sort-by-container">
+                <span>Sort by:</span>
+                <div class="select-wrapper">
+                  <select id="sortBySelect" class="filter-select">
+                    <option value="latest">Latest</option>
+                    <option value="a-z">Alphabetical (A-Z)</option>
+                    <option value="z-a">Alphabetical (Z-A)</option>
+                  </select>
+                  <i data-lucide="chevron-down"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Notes Grid -->
+          <section class="notes-grid" id="notesGrid">
+            <!-- Cards will be injected by dashboard.js -->
+          </section>
+
+          <!-- Interactive Pagination -->
+          <div class="pagination-container">
+            <div class="pagination-info" id="paginationText">
+              Showing 1 to 8 notes
+            </div>
+            <div class="pagination-buttons">
+              <button
+                class="page-btn"
+                id="prevPageBtn"
+                aria-label="Previous Page"
+              >
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <div style="display: flex; gap: 0.25rem" id="paginationNumbers">
+                <!-- Page numbers injected by dashboard.js -->
+              </div>
+              <button class="page-btn" id="nextPageBtn" aria-label="Next Page">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+         </main>
+       </div>
+     </div>
+
+     <!-- Core JavaScript logic -->
+     <script src="/js/dashboard.js"></script>
+
+     <!-- Profile Modal -->
+     <div class="modal" id="profileModal">
+       <div class="modal-overlay" onclick="closeProfileModal()"></div>
+       <div class="modal-content" style="max-width: 450px;">
+         <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+         <div class="modal-header"><h2>Student Profile</h2></div>
+         <div class="profile-details">
+           <div class="profile-avatar-large">
+             <span id="profileAvatarLetter">A</span>
+           </div>
+           <div class="profile-info-list">
+             <div class="profile-info-item"><span class="profile-label">Roll Number</span><span class="profile-value" id="profileRollNo">Loading...</span></div>
+             <div class="profile-info-item"><span class="profile-label">Full Name</span><span class="profile-value" id="profileName">Loading...</span></div>
+             <div class="profile-info-item"><span class="profile-label">Course</span><span class="profile-value" id="profileCourse">Loading...</span></div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+    
+   </body>
+ </html>

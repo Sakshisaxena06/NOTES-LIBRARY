@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes Library - Access Smart Notes Anytime, Anywhere</title>
+    <meta
+      name="description"
+      content="A centralized platform for students to access high-quality PDF notes uploaded by faculty and admins. Learn, download, favorite and share — all in one place."
+    />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <!-- Immediately apply saved theme to prevent flash of wrong theme on page load -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark-theme");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Header Navigation -->
+    <header class="header" id="header">
+      <div class="container header-container">
+        <a href="#" class="logo" id="logo">
+          <i data-lucide="book-open" class="logo-icon"></i>
+          <span>Notes Library</span>
+        </a>
+
+        <nav class="nav-menu" id="navMenu">
+          <a href="#hero" class="nav-link active">Home</a>
+          <a href="#about" class="nav-link">About</a>
+          <a href="#features" class="nav-link">Features</a>
+       
+          <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="btn btn-outline-admin" id="adminLoginBtn">
+            Admin Login
+          </button>
+          <button class="btn btn-primary" id="studentLoginBtn">
+            Student Login
+          </button>
+          <button
+            class="mobile-toggle"
+            id="mobileToggle"
+            aria-label="Toggle Menu"
+          >
+            <i data-lucide="menu" id="menuIcon"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <section class="hero-section" id="hero">
+        <div class="container hero-container">
+          <div class="hero-content">
+            <div class="badge">
+              <i data-lucide="shield-check" class="badge-icon"></i>
+              <span>Smart Notes. Verified Access. Better Learning.</span>
+            </div>
+            <h1>
+              Access Smart Notes <br /><span class="gradient-text"
+                >Anytime, Anywhere</span
+              >
+            </h1>
+            <p class="hero-description">
+              A centralized platform for students to access high-quality PDF
+              notes uploaded by faculty and admins. Learn, download, favorite
+              and share — all in one place.
+            </p>
+            <div class="hero-buttons">
+              <button
+                class="btn btn-primary btn-large btn-icon-left"
+                onclick="
+                  document
+                    .getElementById('subjects')
+                    .scrollIntoView({ behavior: 'smooth' })
+                "
+              >
+                <i data-lucide="book-open"></i>
+                <span>Explore Notes</span>
+              </button>
+              <button
+                class="btn btn-outline btn-large btn-icon-left student-trigger"
+              >
+                <i data-lucide="user"></i>
+                <span>Student Login</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-graphic-container">
+            <div class="hero-graphic">
+              <!-- Abstract Floating elements that represent student & pdfs -->
+              <div class="illustration-bg"></div>
+
+              <!-- Floating PDF card 1 -->
+              <div class="pdf-card float-card-1">
+                <div class="pdf-icon-wrapper">
+                  <i data-lucide="file-text" class="pdf-icon"></i>
+                </div>
+                <div class="pdf-card-info">
+                  <span class="pdf-title"
+                    >Data Structures and Algorithms.pdf</span
+                  >
+                </div>
+                <button class="pdf-action-btn" aria-label="Download PDF">
+                  <i data-lucide="download"></i>
+                </button>
+              </div>
+
+              <!-- Floating PDF card 2 -->
+              <div class="pdf-card float-card-2">
+                <div class="pdf-icon-wrapper">
+                  <i data-lucide="file-text" class="pdf-icon"></i>
+                </div>
+                <div class="pdf-card-info">
+                  <span class="pdf-title">Operating Systems Notes.pdf</span>
+                </div>
+                <button class="pdf-action-btn" aria-label="Download PDF">
+                  <i data-lucide="download"></i>
+                </button>
+              </div>
+
+              <!-- Floating PDF card 3 -->
+              <div class="pdf-card float-card-3">
+                <div class="pdf-icon-wrapper">
+                  <i data-lucide="file-text" class="pdf-icon"></i>
+                </div>
+                <div class="pdf-card-info">
+                  <span class="pdf-title">Linear Algebra Notes.pdf</span>
+                </div>
+                <button class="pdf-action-btn" aria-label="Download PDF">
+                  <i data-lucide="download"></i>
+                </button>
+              </div>
+
+              <!-- Floating Heart decoration -->
+              <div class="floating-heart">
+                <i data-lucide="heart" class="heart-icon"></i>
+              </div>
+
+              <!-- Floating Download Circle -->
+              <div class="floating-download">
+                <i data-lucide="download" class="download-icon"></i>
+              </div>
+
+              <!-- Vector Student illustration drawing inside HTML/CSS -->
+              <div class="student-vector">
+                <svg
+                  viewBox="0 0 400 350"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="vector-svg"
+                >
+                  <!-- Desk line -->
+                  <line
+                    x1="20"
+                    y1="310"
+                    x2="380"
+                    y2="310"
+                    stroke="#CBD5E1"
+                    stroke-width="4"
+                    stroke-linecap="round"
+                  />
+
+                  <!-- Laptop -->
+                  <rect
+                    x="220"
+                    y="240"
+                    width="100"
+                    height="60"
+                    rx="4"
+                    fill="#475569"
+                  />
+                  <rect
+                    x="230"
+                    y="248"
+                    width="80"
+                    height="44"
+                    rx="2"
+                    fill="#0F172A"
+                  />
+                  <path d="M210 300 H330 L320 308 H220 Z" fill="#64748B" />
+                  <!-- Laptop glow -->
+                  <path
+                    d="M230 248 L170 300 L320 300 L310 248 Z"
+                    fill="url(#laptop-glow)"
+                    opacity="0.15"
+                  />
+
+                  <!-- Plant / Pot -->
+                  <path d="M50 310 L55 285 H75 L80 310 Z" fill="#334155" />
+                  <path d="M45 285 H85 V289 H45 Z" fill="#475569" />
+                  <!-- Plant Leaves -->
+                  <path
+                    d="M65 285 Q65 240 45 230 Q60 250 65 285 Z"
+                    fill="#10B981"
+                  />
+                  <path
+                    d="M65 285 Q75 235 95 240 Q75 255 65 285 Z"
+                    fill="#059669"
+                  />
+                  <path
+                    d="M65 285 Q50 250 35 260 Q55 270 65 285 Z"
+                    fill="#34D399"
+                  />
+                  <path
+                    d="M65 285 Q80 260 85 270 Q70 275 65 285 Z"
+                    fill="#047857"
+                  />
+
+                  <!-- Books -->
+                  <rect
+                    x="110"
+                    y="290"
+                    width="70"
+                    height="20"
+                    rx="3"
+                    fill="#818CF8"
+                  />
+                  <rect
+                    x="115"
+                    y="294"
+                    width="60"
+                    height="4"
+                    fill="#FFFFFF"
+                    opacity="0.6"
+                  />
+                  <rect
+                    x="112"
+                    y="275"
+                    width="65"
+                    height="15"
+                    rx="3"
+                    fill="#C084FC"
+                  />
+                  <rect
+                    x="117"
+                    y="279"
+                    width="55"
+                    height="4"
+                    fill="#FFFFFF"
+                    opacity="0.6"
+                  />
+
+                  <!-- Main Student Character -->
+                  <!-- Body/Torso -->
+                  <path
+                    d="M280 310 C280 260 380 260 380 310 Z"
+                    fill="#6366F1"
+                  />
+                  <!-- Neck -->
+                  <rect
+                    x="315"
+                    y="235"
+                    width="20"
+                    height="25"
+                    fill="#FBCFE8"
+                    rx="2"
+                  />
+                  <!-- Head/Face -->
+                  <circle cx="325" cy="210" r="30" fill="#FBCFE8" />
+                  <!-- Hair Back -->
+                  <path
+                    d="M292 210 C290 160 360 160 358 210 V260 C350 270 300 270 292 260 Z"
+                    fill="#1E293B"
+                  />
+                  <!-- Hair Front/Bangs -->
+                  <path
+                    d="M295 210 C295 180 355 180 355 210 C340 190 310 190 295 210 Z"
+                    fill="#1E293B"
+                  />
+                  <!-- Face Details (Smiling eye/lip) -->
+                  <path
+                    d="M312 210 Q315 214 318 210"
+                    stroke="#1E293B"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M322 210 Q325 214 328 210"
+                    stroke="#1E293B"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M315 224 Q320 228 325 224"
+                    stroke="#E11D48"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <!-- Laptop Interaction arm -->
+                  <path
+                    d="M295 295 C275 285 270 280 295 265"
+                    stroke="#FBCFE8"
+                    stroke-width="12"
+                    stroke-linecap="round"
+                  />
+
+                  <!-- Gradients -->
+                  <defs>
+                    <linearGradient
+                      id="laptop-glow"
+                      x1="270"
+                      y1="248"
+                      x2="245"
+                      y2="300"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop offset="0%" stop-color="#818CF8" />
+                      <stop
+                        offset="100%"
+                        stop-color="#818CF8"
+                        stop-opacity="0"
+                      />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why Students Love Section (Features) -->
+      <section class="features-section" id="features">
+        <div class="container">
+          <div class="section-header text-center">
+            <h2>Why Students Love Notes Library</h2>
+            <div class="divider"></div>
+          </div>
+
+          <div class="grid grid-4">
+            <!-- Feature Card 1 -->
+            <div class="feature-card">
+              <div class="feature-icon-wrapper purple">
+                <i data-lucide="file-text" class="feature-icon"></i>
+              </div>
+              <h3>Easy PDF Access</h3>
+              <p>
+                Access all uploaded notes in one place. Search, filter and view
+                instantly.
+              </p>
+            </div>
+
+            <!-- Feature Card 2 -->
+            <div class="feature-card">
+              <div class="feature-icon-wrapper red">
+                <i data-lucide="heart" class="feature-icon"></i>
+              </div>
+              <h3>Save Favourites</h3>
+              <p>Favourite important notes and access them quickly anytime.</p>
+            </div>
+
+            <!-- Feature Card 3 -->
+            <div class="feature-card">
+              <div class="feature-icon-wrapper green">
+                <i data-lucide="download" class="feature-icon"></i>
+              </div>
+              <h3>Download Notes</h3>
+              <p>Download PDF notes and study offline, whenever you want.</p>
+            </div>
+
+            <!-- Feature Card 4 -->
+            <div class="feature-card">
+              <div class="feature-icon-wrapper blue">
+                <i data-lucide="shield" class="feature-icon"></i>
+              </div>
+              <h3>Secure & Verified</h3>
+              <p>
+                Only verified students from our database can access the
+                platform.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section / Platform Info -->
+      <section class="about-section" id="about">
+        <div class="container about-container">
+          <div class="about-graphic">
+            <div class="about-circle bg-glow"></div>
+            <div class="about-box">
+              <div class="about-box-header">
+                <div class="circle-btn red"></div>
+                <div class="circle-btn yellow"></div>
+                <div class="circle-btn green"></div>
+                <span class="box-title">Notes Dashboard</span>
+              </div>
+              <div class="about-box-body">
+                <div class="mock-search">
+                  <i data-lucide="search" class="search-mini-icon"></i>
+                  <span class="search-placeholder"
+                    >Search subjects, topics...</span
+                  >
+                </div>
+                <div class="mock-list">
+                  <div class="mock-list-item">
+                    <div class="mock-bullet"></div>
+                    <div class="mock-line-group">
+                      <div class="mock-line-long"></div>
+                      <div class="mock-line-short"></div>
+                    </div>
+                  </div>
+                  <div class="mock-list-item">
+                    <div class="mock-bullet"></div>
+                    <div class="mock-line-group">
+                      <div class="mock-line-long"></div>
+                      <div class="mock-line-short"></div>
+                    </div>
+                  </div>
+                  <div class="mock-list-item">
+                    <div class="mock-bullet"></div>
+                    <div class="mock-line-group">
+                      <div class="mock-line-long"></div>
+                      <div class="mock-line-short"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="about-content">
+            <h2>Our Mission</h2>
+            <p class="about-lead">
+              Making learning materials organized and accessible to all
+              students.
+            </p>
+            <p>
+              Notes Library was designed to solve the chaos of scattered
+              resources. By providing a clean, verified, and secure space where
+              administrators and professors can upload study materials, and
+              students can view or download them, we bridge the gap between
+              classroom teaching and offline studying.
+            </p>
+            <ul class="about-features">
+              <li>
+                <i data-lucide="check-circle-2"></i> Clean UI designed for
+                studying without distractions
+              </li>
+              <li>
+                <i data-lucide="check-circle-2"></i> Quick search and smart
+                subjects categorization
+              </li>
+              <li>
+                <i data-lucide="check-circle-2"></i> Completely responsive for
+                phones, tablets, and laptops
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+     
+
+      <!-- How It Works Section -->
+      <section class="how-it-works-section" id="how-it-works">
+        <div class="container">
+          <div class="section-header text-center">
+            <h2>How It Works</h2>
+            <div class="divider"></div>
+          </div>
+
+          <div class="steps-container">
+            <div class="steps-connector-line"></div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+              <div class="step-badge">1</div>
+              <div class="step-icon-wrapper">
+                <i data-lucide="cloud-upload" class="step-icon"></i>
+              </div>
+              <h3>Admin Uploads Notes</h3>
+              <p>
+                Admins upload high-quality PDF notes organized by subject and
+                semester.
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+              <div class="step-badge">2</div>
+              <div class="step-icon-wrapper">
+                <i data-lucide="user" class="step-icon"></i>
+              </div>
+              <h3>Student Logs In</h3>
+              <p>
+                Students login using Roll No., Name, Gmail and OTP/Password for
+                secure access.
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+              <div class="step-badge">3</div>
+              <div class="step-icon-wrapper">
+                <i data-lucide="book-open" class="step-icon"></i>
+              </div>
+              <h3>Access & Learn</h3>
+              <p>
+                Students access notes, favorite them, download and share with
+                ease.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="contact-section" id="contact">
+        <div class="container contact-container">
+          <div class="contact-info">
+            <h2>Get In Touch</h2>
+            <p>
+              Have questions, feedback, or need help accessing the Notes
+              Library? Drop us a line and our administrative team will get back
+              to you shortly.
+            </p>
+            <div class="contact-details">
+              <div class="contact-detail-item">
+                <i data-lucide="mail"></i>
+                <span>noteslibrary06@gmail.com</span>
+              </div>
+              <div class="contact-detail-item">
+                <i data-lucide="map-pin"></i>
+                <span>Shobhit University Gangoh, </span>
+              </div>
+            </div>
+          </div>
+          <form class="contact-form" id="contactForm">
+            <div class="form-group">
+              <label for="contactName">Name</label>
+              <input
+                type="text"
+                id="contactName"
+                placeholder="Your Full Name"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="contactEmail">Email</label>
+              <input
+                type="email"
+                id="contactEmail"
+                placeholder="Your Email Address"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="contactMessage">Message</label>
+              <textarea
+                id="contactMessage"
+                rows="4"
+                placeholder="How can we help you?"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+              Send Message
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container footer-container">
+        <div class="footer-info-col">
+          <a href="#" class="logo footer-logo">
+            <i data-lucide="book-open" class="logo-icon"></i>
+            <span>Notes Library</span>
+          </a>
+          <p class="footer-tagline">
+            Smart Notes. Verified Access. Better Learning.
+          </p>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#about">About</a></li>
+          
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Resources</h4>
+          <ul class="footer-links">
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-social-col">
+          <h4>Connect With Us</h4>
+          <div class="social-icons">
+            <a href="#" aria-label="Instagram"
+              ><i data-lucide="instagram"></i
+            ></a>
+            <a href="mailto:support@noteslibrary.com" aria-label="Gmail"
+              ><i data-lucide="mail"></i
+            ></a>
+            <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="container footer-bottom-container">
+          <p>&copy; 2026 Notes Library by sakshi . All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Student Login Modal (New Password Flow) -->
+    <div class="modal auth-modal" id="studentModal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content auth-modal-content">
+        <button class="modal-close" aria-label="Close modal">&times;</button>
+        <div class="auth-grid">
+          <!-- Left side: Form -->
+          <div class="auth-form-side">
+            <a href="#" class="logo form-logo">
+              <i data-lucide="book-open" class="logo-icon"></i>
+              <span>Notes Library</span>
+            </a>
+            
+            <div class="form-header">
+              <h2 id="authModalTitle">Create Account</h2>
+              <p id="authModalSubtitle">Fill in your details to create your account</p>
+            </div>
+            
+            <form id="studentAuthForm">
+              <div class="form-group">
+                <label for="rollNo">Roll No.</label>
+                <div class="input-with-icon">
+                  <i data-lucide="contact" class="input-icon"></i>
+                  <input type="text" id="rollNo" placeholder="Enter your roll number" required autocomplete="off" />
+                </div>
+              </div>
+              
+              <div class="form-group" id="nameGroup">
+                <label for="studentName">Name</label>
+                <div class="input-with-icon">
+                  <i data-lucide="user" class="input-icon"></i>
+                  <input type="text" id="studentName" placeholder="Enter your full name" readonly />
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="studentPassword">Password</label>
+                <div class="input-with-icon">
+                  <i data-lucide="lock" class="input-icon"></i>
+                  <input type="password" id="studentPassword" placeholder="Create a password" required />
+                  <button type="button" class="password-toggle" id="togglePasswordBtn"><i data-lucide="eye-off"></i></button>
+                </div>
+              </div>
+              
+              <div class="form-group" id="confirmPasswordGroup">
+                <label for="studentConfirmPassword">Confirm Password</label>
+                <div class="input-with-icon">
+                  <i data-lucide="lock" class="input-icon"></i>
+                  <input type="password" id="studentConfirmPassword" placeholder="Confirm your password" />
+                  <button type="button" class="password-toggle" id="toggleConfirmPasswordBtn"><i data-lucide="eye-off"></i></button>
+                </div>
+              </div>
+              
+              <div class="password-requirements" id="passwordRequirements">
+                <div class="req-header">
+                  <i data-lucide="shield-check"></i>
+                  <span>Password must contain:</span>
+                </div>
+                <ul class="req-list">
+                  <li id="req-length" class="invalid"><i data-lucide="check"></i> At least 6 characters</li>
+                  <li id="req-number" class="invalid"><i data-lucide="check"></i> At least one number</li>
+                  <li id="req-special" class="invalid"><i data-lucide="check"></i> At least one special character</li>
+                </ul>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">
+                <i data-lucide="user-plus"></i>
+                <span id="authSubmitBtnText">Create Account</span>
+              </button>
+              
+              <div class="auth-divider">
+                <span>OR</span>
+              </div>
+              
+              <p class="auth-toggle-text">
+                <span id="authToggleText">Already have an account?</span> 
+                <a href="#" id="toggleAuthMode">Login here</a>
+              </p>
+            </form>
+          </div>
+          
+          <!-- Right side: Illustration -->
+          <div class="auth-illustration-side">
+            <div class="illustration-wrapper">
+              <!-- Using CSS to draw the books illustration or simple placeholders -->
+              <div class="illustration-books">
+                <div class="book-layer layer-1"></div>
+                <div class="book-layer layer-2"></div>
+                <div class="book-layer layer-3"></div>
+                <div class="book-layer layer-4"></div>
+                <div class="plant-pot">
+                  <div class="plant-leaf"></div>
+                  <div class="plant-leaf leaf-2"></div>
+                </div>
+                <div class="pencil"></div>
+              </div>
+            </div>
+            
+            <div class="illustration-content">
+              <h3>Welcome to<br/><span class="gradient-text">Notes Library</span></h3>
+              <p>Create your account and get access to a wide range of study materials.</p>
+              
+              <div class="feature-bullets">
+                <div class="feature-bullet">
+                  <div class="bullet-icon blue"><i data-lucide="book-open"></i></div>
+                  <div class="bullet-text">
+                    <h4>Access Study Materials</h4>
+                    <p>Get access to notes, textbooks and important resources.</p>
+                  </div>
+                </div>
+                <div class="feature-bullet">
+                  <div class="bullet-icon green"><i data-lucide="download"></i></div>
+                  <div class="bullet-text">
+                    <h4>Download Anytime</h4>
+                    <p>Download notes and study offline whenever you want.</p>
+                  </div>
+                </div>
+                <div class="feature-bullet">
+                  <div class="bullet-icon purple"><i data-lucide="users"></i></div>
+                  <div class="bullet-text">
+                    <h4>Share & Learn</h4>
+                    <p>Share notes with friends and learn together.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="adminModal">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Close modal">&times;</button>
+        <div class="modal-header">
+          <h2>Admin Login</h2>
+          <p>Access the administrative panel to manage uploads and students.</p>
+        </div>
+        <form id="adminLoginForm">
+          <div class="form-group">
+            <label for="adminEmail">Username or Email</label>
+            <input
+              type="text"
+              id="adminEmail"
+              placeholder="admin@noteslibrary.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input
+              type="password"
+              id="adminPassword"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            Login as Admin
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+  </body>
+</html>

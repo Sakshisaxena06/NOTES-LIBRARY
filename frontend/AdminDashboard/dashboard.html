@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Notes Library</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Dashboard Stylesheet & Core Stylesheet (for Modals) -->
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+     <link rel="icon" type="image/png" href="/assets/favicon.png" />
+    <!-- Immediately apply saved theme to prevent flash of wrong theme on page load -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem("theme");
+        if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark-theme");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Left Sidebar Navigation -->
+      <aside class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+          <i data-lucide="book-open"></i>
+          <span>Notes Library</span>
+        </a>
+
+        <ul class="sidebar-menu">
+          <li class="menu-label">Admin Control Panel</li>
+          <li>
+            <a href="#" class="sidebar-link active" id="homeSidebarBtn">
+              <i data-lucide="home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="allNotesSidebarBtn">
+              <i data-lucide="file-text"></i>
+              <span>All Notes</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="uploadNotesSidebarBtn">
+              <i data-lucide="cloud-upload"></i>
+              <span>Upload Notes</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="manageSubjectsSidebarBtn">
+              <i data-lucide="folder-cog"></i>
+              <span>Manage Subjects</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="studentFeedbackSidebarBtn">
+              <i data-lucide="message-square"></i>
+              <span>Student Feedback</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="favouritesSidebarBtn">
+              <i data-lucide="heart"></i>
+              <span>My Favourites</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-link" id="downloadsSidebarBtn">
+              <i data-lucide="download"></i>
+              <span>My Downloads</span>
+            </a>
+          </li>
+
+          <!-- <li class="menu-label">Categories</li>
+          <ul id="categoryList"></ul>
+          <li>
+            <a href="#" class="sidebar-link" data-category="all">
+              <i data-lucide="more-horizontal"></i>
+              <span>All Categories</span>
+            </a>
+          </li>
+        </ul> -->
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="main-wrapper">
+        <!-- Top Navigation Bar -->
+        <header class="header-nav">
+          <!-- Mobile Sidebar Toggle -->
+          <button
+            class="icon-btn menu-toggle-btn"
+            id="sidebarToggle"
+            aria-label="Toggle Menu"
+          >
+            <i data-lucide="menu"></i>
+          </button>
+
+          <!-- Search Box -->
+          <div class="search-bar">
+            <i data-lucide="search"></i>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search notes by title, subject, or tag..."
+            />
+          </div>
+
+          <!-- Header Control Center -->
+          <div class="header-actions">
+            
+
+            <!-- Bright / Dark Theme Button -->
+            <button
+              class="icon-btn theme-toggle"
+              id="themeToggleBtn"
+              aria-label="Toggle Theme"
+            >
+              <i data-lucide="moon" id="themeIcon"></i>
+            </button>
+
+            <!-- Admin Profile Menu -->
+            <div class="user-profile" id="userProfileBtn">
+              <div class="user-avatar" id="avatarLetter">A</div>
+              <div class="user-info">
+                <span class="user-name" id="userNameDisplay">Admin</span>
+                <span class="user-role">Administrator</span>
+              </div>
+              <i data-lucide="chevron-down" class="chevron"></i>
+
+              <!-- Dropdown Options -->
+              <div class="profile-dropdown" id="profileDropdown">
+                <a
+                  href="#"
+                  class="dropdown-item"
+                  onclick="
+                    showNotification('Profile editing is restricted.', 'error')
+                  "
+                >
+                  
+                </a>
+               
+                <a href="#" class="dropdown-item logout" id="logoutBtn">
+                  <i data-lucide="log-out"></i> Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dashboard Main Container -->
+        <main class="dashboard-content">
+          <!-- Welcome Banner -->
+          <div class="welcome-section">
+            <div class="welcome-info">
+              <h1 id="welcomeHeader">Welcome back, Admin! 👋</h1>
+              <p id="welcomeSubheader">
+                Access the administrative dashboard to manage study materials.
+              </p>
+            </div>
+
+            <!-- Overview Summary Statistics for Admin -->
+            <div class="stats-container" id="statsContainer">
+              <div class="stat-card">
+                <div class="stat-icon-wrapper indigo">
+                  <i data-lucide="book-open"></i>
+                </div>
+                <div class="stat-details">
+                  <span class="stat-label">Total Notes</span>
+                  <span class="stat-value" id="totalNotesStat"></span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon-wrapper blue">
+                  <i data-lucide="cloud-upload"></i>
+                </div>
+                <div class="stat-details">
+                  <span class="stat-label">Admin Uploaded</span>
+                  <span class="stat-value" id="uploadedNotesStat">0</span>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon-wrapper gold">
+                  <i data-lucide="layout"></i>
+                </div>
+                <div class="stat-details">
+                  <span class="stat-label">Subjects</span>
+                  <span class="stat-value" id="subjectsStat">6</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback View Container (Hidden by Default) -->
+          <div id="feedbackView" style="display: none; padding: 1rem 0; width: 100%;">
+            <div class="chat-container" id="feedbackChatContainer" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; min-height: 400px; max-height: 600px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;">
+              <!-- Messages will be injected here -->
+            </div>
+          </div>
+
+          <!-- Filters and Sort Options Bar (TRENDING REMOVED) -->
+          <div class="filter-bar">
+            <div class="filter-pills">
+              <button class="filter-pill active" data-filter="all">All</button>
+              <button class="filter-pill" data-filter="recent">Recent</button>
+            </div>
+
+            <div class="filter-dropdowns">
+              <div class="select-wrapper">
+                <select id="subjectSelect" class="filter-select">
+                  <option value="all">All Subjects</option>
+                 
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+
+              <div class="select-wrapper">
+                <select id="semesterSelect" class="filter-select">
+                  <option value="all">All Semester</option>
+                  <option value="5th Semester">5th Semester</option>
+                  <option value="6th Semester">6th Semester</option>
+                  <option value="7th Semester">7th Semester</option>
+                </select>
+                <i data-lucide="chevron-down"></i>
+              </div>
+
+              <div class="sort-by-container">
+                <span>Sort by:</span>
+                <div class="select-wrapper">
+                  <select id="sortBySelect" class="filter-select">
+                    <option value="latest">Latest</option>
+                    <option value="a-z">Alphabetical (A-Z)</option>
+                    <option value="z-a">Alphabetical (Z-A)</option>
+                  </select>
+                  <i data-lucide="chevron-down"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Notes Grid -->
+          <section class="notes-grid" id="notesGrid">
+            <!-- Cards will be injected by dashboard.js -->
+          </section>
+
+          <!-- Interactive Pagination -->
+          <div class="pagination-container">
+            <div class="pagination-info" id="paginationText">
+              Showing 1 to 8 of 245 notes
+            </div>
+            <div class="pagination-buttons">
+              <button
+                class="page-btn"
+                id="prevPageBtn"
+                aria-label="Previous Page"
+              >
+                <i data-lucide="chevron-left"></i>
+              </button>
+              <div style="display: flex; gap: 0.25rem" id="paginationNumbers">
+                <!-- Page numbers injected by dashboard.js -->
+              </div>
+              <button class="page-btn" id="nextPageBtn" aria-label="Next Page">
+                <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Upload Notes Modal -->
+    <div class="modal" id="uploadModal">
+      <div class="modal-overlay" id="uploadModalOverlay"></div>
+      <div class="modal-content" style="max-width: 480px; padding: 2rem">
+        <button class="modal-close" id="closeUploadModalBtn">&times;</button>
+        <div class="modal-header" style="margin-bottom: 1.5rem">
+          <h2>Upload New Notes</h2>
+          <p>Fill in details to upload PDF notes for students.</p>
+        </div>
+        <form id="uploadNotesForm">
+          <div class="form-group" style="margin-bottom: 1rem">
+            <label
+              for="uploadTitle"
+              style="
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+              "
+              >Notes Title</label
+            >
+            <input
+              type="text"
+              id="uploadTitle"
+              placeholder="e.g., Data Structures and Algorithms"
+              required
+              style="
+                width: 100%;
+                padding: 0.65rem 0.85rem;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                background: var(--bg-card);
+                color: var(--text-main);
+                outline: none;
+              "
+            />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem">
+            <label
+              for="uploadSubject"
+              style="
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+              "
+              >Subject / Category</label
+            >
+            <div class="select-wrapper">
+              <select
+                id="uploadSubject"
+                required
+                style="
+                  width: 100%;
+                  padding: 0.65rem 0.85rem;
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-md);
+                  background: var(--bg-card);
+                  color: var(--text-main);
+                  outline: none;
+                "
+              ></select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem">
+            <label
+              for="uploadSemester"
+              style="
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+              "
+              >Semester</label
+            >
+            <div class="select-wrapper">
+              <select
+                id="uploadSemester"
+                required
+                style="
+                  width: 100%;
+                  padding: 0.65rem 0.85rem;
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-md);
+                  background: var(--bg-card);
+                  color: var(--text-main);
+                  outline: none;
+                "
+              >
+                <option value="5th Semester">5th Semester</option>
+                <option value="6th Semester">6th Semester</option>
+                <option value="7th Semester">7th Semester</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem">
+            <label
+              for="uploadFile"
+              style="
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+              "
+              >Select PDF Document</label
+            >
+            <input
+              type="file"
+              id="uploadFile"
+              accept=".pdf"
+              required
+              style="
+                width: 100%;
+                padding: 0.5rem 0;
+                border: none;
+                background: transparent;
+                color: var(--text-main);
+                outline: none;
+                cursor: pointer;
+              "
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-full"
+            style="
+              width: 100%;
+              padding: 0.75rem;
+              font-weight: 600;
+              border-radius: var(--radius-md);
+            "
+          >
+            Upload PDF Note
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Manage Subjects Modal -->
+    <div class="modal" id="subjectsModal">
+      <div class="modal-overlay" id="subjectsModalOverlay"></div>
+      <div class="modal-content" style="max-width: 500px; padding: 2rem">
+        <button class="modal-close" id="closeSubjectsModalBtn">&times;</button>
+        <div class="modal-header" style="margin-bottom: 1.5rem">
+          <h2>Manage Subjects</h2>
+          <p>Add, edit, or remove subject categories.</p>
+        </div>
+        <div style="margin-bottom: 1rem">
+          <div class="form-group" style="margin-bottom: 1rem">
+            <label
+              style="
+                font-weight: 600;
+                font-size: 0.9rem;
+                margin-bottom: 0.35rem;
+              "
+              >New Subject Name</label
+            >
+            <div style="display: flex; gap: 0.5rem">
+              <input
+                type="text"
+                id="newSubjectInput"
+                placeholder="Enter subject name"
+                style="
+                  flex: 1;
+                  padding: 0.65rem 0.85rem;
+                  border: 1px solid var(--border);
+                  border-radius: var(--radius-md);
+                  background: var(--bg-card);
+                  color: var(--text-main);
+                  outline: none;
+                "
+              />
+              <button
+                class="btn btn-primary"
+                id="addSubjectBtn"
+                style="padding: 0.65rem 1rem"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          <div
+            style="
+              max-height: 300px;
+              overflow-y: auto;
+              border: 1px solid var(--border);
+              border-radius: var(--radius-md);
+              padding: 0.5rem;
+            "
+          >
+            <ul
+              id="subjectsList"
+              style="list-style: none; padding: 0; margin: 0"
+            ></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core JavaScript logic -->
+    <script src="/js/admin.js"></script>
+  </body>
+</html>

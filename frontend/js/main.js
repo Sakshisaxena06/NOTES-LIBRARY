@@ -240,9 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleAuthModeBtn.textContent = "Create one here";
     studentNameField.removeAttribute("required");
     studentConfirmPassword.removeAttribute("required");
-    // Show the Forgot Password link
-    const fpRow = document.getElementById("forgotPasswordRow");
-    if (fpRow) fpRow.style.display = "block";
   };
 
   // ── Reusable function: switch the modal UI to Sign-up mode ───────────────────
@@ -258,9 +255,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleAuthModeBtn.textContent = "Login here";
     studentNameField.setAttribute("required", "required");
     studentConfirmPassword.setAttribute("required", "required");
-    // Hide the Forgot Password link
-    const fpRow = document.getElementById("forgotPasswordRow");
-    if (fpRow) fpRow.style.display = "none";
   };
 
   // Toggle Auth Mode (Signup vs Login) via the link at the bottom

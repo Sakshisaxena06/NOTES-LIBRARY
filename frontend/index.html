@@ -654,8 +654,8 @@
             </a>
             
             <div class="form-header">
-              <h2 id="authModalTitle">Create Account</h2>
-              <p id="authModalSubtitle">Fill in your details to create your account</p>
+              <h2 id="authModalTitle">Welcome Back!</h2>
+              <p id="authModalSubtitle">Login to access your notes</p>
             </div>
             
             <form id="studentAuthForm">
@@ -667,7 +667,8 @@
                 </div>
               </div>
               
-              <div class="form-group" id="nameGroup">
+              <!-- Name field: hidden in Login mode, shown in Signup mode -->
+              <div class="form-group" id="nameGroup" style="display:none;">
                 <label for="studentName">Name</label>
                 <div class="input-with-icon">
                   <i data-lucide="user" class="input-icon"></i>
@@ -679,12 +680,13 @@
                 <label for="studentPassword">Password</label>
                 <div class="input-with-icon">
                   <i data-lucide="lock" class="input-icon"></i>
-                  <input type="password" id="studentPassword" placeholder="Create a password" required />
+                  <input type="password" id="studentPassword" placeholder="Enter your password" required />
                   <button type="button" class="password-toggle" id="togglePasswordBtn"><i data-lucide="eye-off"></i></button>
                 </div>
               </div>
               
-              <div class="form-group" id="confirmPasswordGroup">
+              <!-- Confirm Password: hidden in Login mode, shown in Signup mode -->
+              <div class="form-group" id="confirmPasswordGroup" style="display:none;">
                 <label for="studentConfirmPassword">Confirm Password</label>
                 <div class="input-with-icon">
                   <i data-lucide="lock" class="input-icon"></i>
@@ -706,12 +708,12 @@
               </div>
               
               <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">
-                <i data-lucide="user-plus"></i>
-                <span id="authSubmitBtnText">Create Account</span>
+                <i data-lucide="log-in"></i>
+                <span id="authSubmitBtnText">Login</span>
               </button>
 
-              <!-- Forgot Password link — always visible -->
-              <div id="forgotPasswordRow" style="text-align:center; margin-top: 0.5rem;">
+              <!-- Forgot Password link — visible in Login mode -->
+              <div id="forgotPasswordRow" style="text-align:center; margin-top: 0.75rem;">
                 <a href="#" id="forgotPasswordBtn" style="font-size:0.85rem; color: var(--primary); text-decoration: none; font-weight: 500;">
                   <i data-lucide="key-round" style="width:13px;height:13px;vertical-align:middle;"></i>
                   Forgot Password?
@@ -723,8 +725,8 @@
               </div>
               
               <p class="auth-toggle-text">
-                <span id="authToggleText">Already have an account?</span> 
-                <a href="#" id="toggleAuthMode">Login here</a>
+                <span id="authToggleText">Don't have an account?</span> 
+                <a href="#" id="toggleAuthMode">Create one here</a>
               </p>
             </form>
 

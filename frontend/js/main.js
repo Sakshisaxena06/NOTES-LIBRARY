@@ -225,21 +225,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleAuthModeBtn = document.getElementById("toggleAuthMode");
   const authToggleText = document.getElementById("authToggleText");
   
-  let isLoginMode = false;
+  // Default is Login mode — matches the HTML which opens showing the Login form
+  let isLoginMode = true;
 
   // ── Reusable function: switch the modal UI to Login mode ─────────────────────
   const switchToLoginMode = () => {
     isLoginMode = true;
     authModalTitle.textContent = "Welcome Back!";
-    authModalSubtitle.textContent = "Login to access your account";
+    authModalSubtitle.textContent = "Login to access your notes";
     nameGroup.style.display = "none";
     confirmPasswordGroup.style.display = "none";
     passwordRequirements.classList.remove("show");
     authSubmitBtnText.textContent = "Login";
+    // Swap submit button icon to log-in
+    const submitIcon = document.querySelector("#authSubmitBtn i");
+    if (submitIcon) submitIcon.setAttribute("data-lucide", "log-in");
     authToggleText.textContent = "Don't have an account?";
     toggleAuthModeBtn.textContent = "Create one here";
     studentNameField.removeAttribute("required");
     studentConfirmPassword.removeAttribute("required");
+    // Show Forgot Password, hide it in signup mode
+    const fpRow = document.getElementById("forgotPasswordRow");
+    if (fpRow) fpRow.style.display = "block";
+    if (typeof lucide !== "undefined") lucide.createIcons();
   };
 
   // ── Reusable function: switch the modal UI to Sign-up mode ───────────────────
@@ -251,10 +259,17 @@ document.addEventListener("DOMContentLoaded", () => {
     confirmPasswordGroup.style.display = "block";
     if (studentPassword.value.length > 0) passwordRequirements.classList.add("show");
     authSubmitBtnText.textContent = "Create Account";
+    // Swap submit button icon to user-plus
+    const submitIcon = document.querySelector("#authSubmitBtn i");
+    if (submitIcon) submitIcon.setAttribute("data-lucide", "user-plus");
     authToggleText.textContent = "Already have an account?";
     toggleAuthModeBtn.textContent = "Login here";
     studentNameField.setAttribute("required", "required");
     studentConfirmPassword.setAttribute("required", "required");
+    // Hide Forgot Password in signup mode
+    const fpRow = document.getElementById("forgotPasswordRow");
+    if (fpRow) fpRow.style.display = "none";
+    if (typeof lucide !== "undefined") lucide.createIcons();
   };
 
   // Toggle Auth Mode (Signup vs Login) via the link at the bottom

@@ -709,6 +709,14 @@
                 <i data-lucide="user-plus"></i>
                 <span id="authSubmitBtnText">Create Account</span>
               </button>
+
+              <!-- Forgot Password link — always visible -->
+              <div id="forgotPasswordRow" style="text-align:center; margin-top: 0.5rem;">
+                <a href="#" id="forgotPasswordBtn" style="font-size:0.85rem; color: var(--primary); text-decoration: none; font-weight: 500;">
+                  <i data-lucide="key-round" style="width:13px;height:13px;vertical-align:middle;"></i>
+                  Forgot Password?
+                </a>
+              </div>
               
               <div class="auth-divider">
                 <span>OR</span>
@@ -719,8 +727,81 @@
                 <a href="#" id="toggleAuthMode">Login here</a>
               </p>
             </form>
+
+            <!-- ══ Forgot Password Panel (hidden by default) ══════════════════ -->
+            <div id="forgotPasswordPanel" style="display:none;">
+              <div class="form-header" style="margin-bottom:1.25rem;">
+                <h2 style="font-size:1.4rem;">Reset Password</h2>
+                <p style="font-size:0.9rem; color:var(--text-muted);">Enter your Roll No and registered name to verify your identity</p>
+              </div>
+
+              <form id="forgotPasswordForm">
+                <!-- Step 1: Identity -->
+                <div id="fpStep1">
+                  <div class="form-group">
+                    <label for="fpRollNo">Roll No.</label>
+                    <div class="input-with-icon">
+                      <i data-lucide="contact" class="input-icon"></i>
+                      <input type="text" id="fpRollNo" placeholder="Enter your roll number" required autocomplete="off" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fpName">Full Name <span style="font-size:0.78rem;color:var(--text-muted);">(as registered)</span></label>
+                    <div class="input-with-icon">
+                      <i data-lucide="user" class="input-icon"></i>
+                      <input type="text" id="fpName" placeholder="Enter your full name exactly" required autocomplete="off" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2: New Password -->
+                <div id="fpStep2" style="display:none;">
+                  <div class="form-group">
+                    <label for="fpNewPassword">New Password</label>
+                    <div class="input-with-icon">
+                      <i data-lucide="lock" class="input-icon"></i>
+                      <input type="password" id="fpNewPassword" placeholder="Create new password" required />
+                      <button type="button" class="password-toggle" id="toggleFpNewPwd"><i data-lucide="eye-off"></i></button>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fpConfirmPassword">Confirm New Password</label>
+                    <div class="input-with-icon">
+                      <i data-lucide="lock" class="input-icon"></i>
+                      <input type="password" id="fpConfirmPassword" placeholder="Confirm new password" required />
+                      <button type="button" class="password-toggle" id="toggleFpConfirmPwd"><i data-lucide="eye-off"></i></button>
+                    </div>
+                  </div>
+                  <div class="password-requirements" id="fpPasswordRequirements" style="margin-bottom:1rem;">
+                    <div class="req-header">
+                      <i data-lucide="shield-check"></i>
+                      <span>Password must contain:</span>
+                    </div>
+                    <ul class="req-list">
+                      <li id="fp-req-length" class="invalid"><i data-lucide="check"></i> At least 6 characters</li>
+                      <li id="fp-req-number" class="invalid"><i data-lucide="check"></i> At least one number</li>
+                      <li id="fp-req-special" class="invalid"><i data-lucide="check"></i> At least one special character</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="fpSubmitBtn">
+                  <i data-lucide="shield-check"></i>
+                  <span id="fpSubmitBtnText">Verify Identity</span>
+                </button>
+              </form>
+
+              <div style="text-align:center; margin-top: 1rem;">
+                <a href="#" id="backToLoginBtn" style="font-size:0.85rem; color:var(--text-muted); text-decoration:none;">
+                  <i data-lucide="arrow-left" style="width:13px;height:13px;vertical-align:middle;"></i>
+                  Back to Login
+                </a>
+              </div>
+            </div>
+            <!-- ══ End Forgot Password Panel ══════════════════════════════════ -->
           </div>
-          
+          <!-- End auth-form-side -->
+
           <!-- Right side: Illustration -->
           <div class="auth-illustration-side">
             <div class="illustration-wrapper">

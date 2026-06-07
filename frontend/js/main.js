@@ -240,6 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleAuthModeBtn.textContent = "Create one here";
     studentNameField.removeAttribute("required");
     studentConfirmPassword.removeAttribute("required");
+    // Show the Forgot Password link
+    const fpRow = document.getElementById("forgotPasswordRow");
+    if (fpRow) fpRow.style.display = "block";
   };
 
   // ── Reusable function: switch the modal UI to Sign-up mode ───────────────────
@@ -255,6 +258,9 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleAuthModeBtn.textContent = "Login here";
     studentNameField.setAttribute("required", "required");
     studentConfirmPassword.setAttribute("required", "required");
+    // Hide the Forgot Password link
+    const fpRow = document.getElementById("forgotPasswordRow");
+    if (fpRow) fpRow.style.display = "none";
   };
 
   // Toggle Auth Mode (Signup vs Login) via the link at the bottom
@@ -268,6 +274,184 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  // ══ Forgot Password Flow ══════════════════════════════════════════════════════
+  const forgotPasswordBtn   = document.getElementById("forgotPasswordBtn");
+  const forgotPasswordPanel = document.getElementById("forgotPasswordPanel");
+  const forgotPasswordForm  = document.getElementById("forgotPasswordForm");
+  const backToLoginBtn      = document.getElementById("backToLoginBtn");
+  const fpSubmitBtnText     = document.getElementById("fpSubmitBtnText");
+  const fpStep1             = document.getElementById("fpStep1");
+  const fpStep2             = document.getElementById("fpStep2");
+  const fpNewPassword       = document.getElementById("fpNewPassword");
+  const studentAuthFormEl   = document.getElementById("studentAuthForm");
+
+  // Track whether identity has been verified (step 1 passed)
+  let fpIdentityVerified = false;
+  let fpVerifiedRollNo   = "";
+  let fpVerifiedName     = "";
+
+  // Helper: show Forgot Password panel, hide main auth form
+  const showForgotPanel = () => {
+    if (studentAuthFormEl)   studentAuthFormEl.style.display = "none";
+    const fpRow = document.getElementById("forgotPasswordRow");
+    if (fpRow) fpRow.style.display = "none";
+    if (forgotPasswordPanel) forgotPasswordPanel.style.display = "block";
+    // Reset to Step 1
+    fpIdentityVerified = false;
+    fpVerifiedRollNo = "";
+    fpVerifiedName   = "";
+    if (fpStep1) fpStep1.style.display = "block";
+    if (fpStep2) fpStep2.style.display = "none";
+    if (fpSubmitBtnText) fpSubmitBtnText.textContent = "Verify Identity";
+    if (forgotPasswordForm) forgotPasswordForm.reset();
+    if (typeof lucide !== "undefined") lucide.createIcons();
+  };
+
+  // Helper: hide Forgot Password panel, return to login form
+  const hideForgotPanel = () => {
+    if (forgotPasswordPanel) forgotPasswordPanel.style.display = "none";
+    if (studentAuthFormEl)   studentAuthFormEl.style.display = "block";
+    // Make sure we're in Login mode when returning
+    switchToLoginMode();
+    if (forgotPasswordForm) forgotPasswordForm.reset();
+    if (fpStep1) fpStep1.style.display = "block";
+    if (fpStep2) fpStep2.style.display = "none";
+    fpIdentityVerified = false;
+  };
+
+  // Open Forgot Password panel
+  if (forgotPasswordBtn) {
+    forgotPasswordBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showForgotPanel();
+    });
+  }
+
+  // Back to Login button
+  if (backToLoginBtn) {
+    backToLoginBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      hideForgotPanel();
+    });
+  }
+
+  // Password strength indicators for forgot password form
+  if (fpNewPassword) {
+    fpNewPassword.addEventListener("input", () => {
+      const val = fpNewPassword.value;
+      const fpReqLen     = document.getElementById("fp-req-length");
+      const fpReqNum     = document.getElementById("fp-req-number");
+      const fpReqSpecial = document.getElementById("fp-req-special");
+      if (fpReqLen)     val.length >= 6                             ? fpReqLen.classList.remove("invalid")     : fpReqLen.classList.add("invalid");
+      if (fpReqNum)     /[0-9]/.test(val)                           ? fpReqNum.classList.remove("invalid")     : fpReqNum.classList.add("invalid");
+      if (fpReqSpecial) /[!@#$%^&*(),.?":{}|<>]/.test(val)         ? fpReqSpecial.classList.remove("invalid") : fpReqSpecial.classList.add("invalid");
+    });
+  }
+
+  // Forgot Password Form Submit — 2-step
+  if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!fpIdentityVerified) {
+        // ── STEP 1: Verify Roll No + Name ─────────────────────────────────────
+        const rollNo = (document.getElementById("fpRollNo")?.value || "").trim();
+        const name   = (document.getElementById("fpName")?.value   || "").trim();
+
+        if (!rollNo || !name) {
+          showNotification("Please enter your Roll No. and Full Name.", "error");
+          return;
+        }
+
+        const fpSubmitBtn = document.getElementById("fpSubmitBtn");
+        if (fpSubmitBtn) fpSubmitBtn.disabled = true;
+
+        try {
+          // We call the backend with dummy new_password to just verify identity.
+          // Actually, we verify by trying a fetch to the student lookup first.
+          const res = await fetch(
+            `${window.API_BASE_URL}/api/student/${encodeURIComponent(rollNo)}`
+          );
+          if (!res.ok) {
+            showNotification("Roll number not found. Please contact your administrator.", "error");
+            return;
+          }
+          const student = await res.json();
+
+          // Case-insensitive name match
+          if (student.name.trim().toLowerCase() !== name.toLowerCase()) {
+            showNotification("Name does not match our records. Enter your full name exactly as registered.", "error");
+            return;
+          }
+
+          // Identity verified — move to Step 2
+          fpIdentityVerified = true;
+          fpVerifiedRollNo   = rollNo;
+          fpVerifiedName     = name;
+          fpStep1.style.display = "none";
+          fpStep2.style.display = "block";
+          if (fpSubmitBtnText) fpSubmitBtnText.textContent = "Reset Password";
+          const fpNewPwd = document.getElementById("fpNewPassword");
+          if (fpNewPwd) fpNewPwd.focus();
+          if (typeof lucide !== "undefined") lucide.createIcons();
+          showNotification(`Identity verified! Now set your new password, ${student.name.trim()}.`, "success");
+
+        } catch (err) {
+          console.error(err);
+          showNotification("Something went wrong. Please try again.", "error");
+        } finally {
+          if (fpSubmitBtn) fpSubmitBtn.disabled = false;
+        }
+
+      } else {
+        // ── STEP 2: Set New Password ───────────────────────────────────────────
+        const newPwd     = (document.getElementById("fpNewPassword")?.value     || "");
+        const confirmPwd = (document.getElementById("fpConfirmPassword")?.value || "");
+
+        if (!newPwd || !confirmPwd) {
+          showNotification("Please fill in both password fields.", "error");
+          return;
+        }
+        if (newPwd !== confirmPwd) {
+          showNotification("Passwords do not match.", "error");
+          return;
+        }
+        if (newPwd.length < 6 || !/[0-9]/.test(newPwd) || !/[!@#$%^&*(),.?":{}|<>]/.test(newPwd)) {
+          showNotification("Password does not meet requirements.", "error");
+          return;
+        }
+
+        const fpSubmitBtn = document.getElementById("fpSubmitBtn");
+        if (fpSubmitBtn) fpSubmitBtn.disabled = true;
+
+        try {
+          const result = await postJson("/api/student/forgot-password", {
+            rollno:           fpVerifiedRollNo,
+            name:             fpVerifiedName,
+            new_password:     newPwd,
+            confirm_password: confirmPwd,
+          });
+
+          showNotification("Password reset successfully! Please login with your new password.", "success");
+
+          // Go back to Login mode after a short delay
+          setTimeout(() => {
+            hideForgotPanel();
+            // Pre-fill the roll number so the student can just type their password
+            const rollField = document.getElementById("rollNo");
+            if (rollField) rollField.value = fpVerifiedRollNo;
+          }, 1500);
+
+        } catch (err) {
+          showNotification(err.message || "Failed to reset password. Please try again.", "error");
+        } finally {
+          if (fpSubmitBtn) fpSubmitBtn.disabled = false;
+        }
+      }
+    });
+  }
+  // ══ End Forgot Password Flow ══════════════════════════════════════════════════
 
   // Password Show/Hide Toggle
   document.querySelectorAll('.password-toggle').forEach(btn => {

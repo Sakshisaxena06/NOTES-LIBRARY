@@ -1,4 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ── Session Guard (works on Vercel — uses localStorage, no server session needed) ──
+  // If student is already logged in, send them straight to the dashboard.
+  const _loggedIn  = localStorage.getItem("studentLoggedIn") === "true";
+  const _rollNo    = localStorage.getItem("studentRollNo");
+  const _name      = localStorage.getItem("studentName");
+  if (_loggedIn && _rollNo && _name) {
+    // Use replace() so the home page is NOT added to browser history.
+    window.location.replace("/Dashboard/dashboard.html");
+    return; // Stop all remaining JS — we are navigating away.
+  }
+
   // Initialize Lucide Icons
   if (typeof lucide !== "undefined") {
     lucide.createIcons();
@@ -215,37 +226,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const authToggleText = document.getElementById("authToggleText");
   
   let isLoginMode = false;
-  
-  // Toggle Auth Mode (Signup vs Login)
+
+  // ── Reusable function: switch the modal UI to Login mode ─────────────────────
+  const switchToLoginMode = () => {
+    isLoginMode = true;
+    authModalTitle.textContent = "Welcome Back!";
+    authModalSubtitle.textContent = "Login to access your account";
+    nameGroup.style.display = "none";
+    confirmPasswordGroup.style.display = "none";
+    passwordRequirements.classList.remove("show");
+    authSubmitBtnText.textContent = "Login";
+    authToggleText.textContent = "Don't have an account?";
+    toggleAuthModeBtn.textContent = "Create one here";
+    studentNameField.removeAttribute("required");
+    studentConfirmPassword.removeAttribute("required");
+  };
+
+  // ── Reusable function: switch the modal UI to Sign-up mode ───────────────────
+  const switchToSignupMode = () => {
+    isLoginMode = false;
+    authModalTitle.textContent = "Create Account";
+    authModalSubtitle.textContent = "Fill in your details to create your account";
+    nameGroup.style.display = "block";
+    confirmPasswordGroup.style.display = "block";
+    if (studentPassword.value.length > 0) passwordRequirements.classList.add("show");
+    authSubmitBtnText.textContent = "Create Account";
+    authToggleText.textContent = "Already have an account?";
+    toggleAuthModeBtn.textContent = "Login here";
+    studentNameField.setAttribute("required", "required");
+    studentConfirmPassword.setAttribute("required", "required");
+  };
+
+  // Toggle Auth Mode (Signup vs Login) via the link at the bottom
   if (toggleAuthModeBtn) {
     toggleAuthModeBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      isLoginMode = !isLoginMode;
-      
       if (isLoginMode) {
-        authModalTitle.textContent = "Welcome Back!";
-        authModalSubtitle.textContent = "Login to access your account";
-        nameGroup.style.display = "none";
-        confirmPasswordGroup.style.display = "none";
-        passwordRequirements.classList.remove("show");
-        authSubmitBtnText.textContent = "Login";
-        authToggleText.textContent = "Don't have an account?";
-        toggleAuthModeBtn.textContent = "Create one here";
-        // Remove required attributes for login
-        studentNameField.removeAttribute("required");
-        studentConfirmPassword.removeAttribute("required");
+        switchToSignupMode();
       } else {
-        authModalTitle.textContent = "Create Account";
-        authModalSubtitle.textContent = "Fill in your details to create your account";
-        nameGroup.style.display = "block";
-        confirmPasswordGroup.style.display = "block";
-        if(studentPassword.value.length > 0) passwordRequirements.classList.add("show");
-        authSubmitBtnText.textContent = "Create Account";
-        authToggleText.textContent = "Already have an account?";
-        toggleAuthModeBtn.textContent = "Login here";
-        // Add required attributes back
-        studentNameField.setAttribute("required", "required");
-        studentConfirmPassword.setAttribute("required", "required");
+        switchToLoginMode();
       }
     });
   }
@@ -308,19 +327,29 @@ document.addEventListener("DOMContentLoaded", () => {
     return data;
   };
 
-  // Fetch Student Name
+  // Fetch Student Name by Roll No — also auto-switches to Login mode if account exists
   const fetchStudentNameByRoll = async (rollNo) => {
-    if (!rollNo || isLoginMode) return;
+    if (!rollNo) return;
+    // In login mode we still fill in the name for a nicer UX, but skip the password check
     try {
       const response = await fetch(`${window.API_BASE_URL}/api/student/${encodeURIComponent(rollNo.trim())}`);
       if (!response.ok) {
-        studentNameField.value = "";
+        if (!isLoginMode) studentNameField.value = "";
         return;
       }
       const student = await response.json();
+      // Always populate the name field (hidden in login mode, but harmless)
       studentNameField.value = student.name || "";
+
       if (student.hasPassword && !isLoginMode) {
-         showNotification("Account already exists for this Roll No. Please switch to Login.", "error");
+        // ── This student already has an account → auto-switch to Login mode ──
+        switchToLoginMode();
+        showNotification(
+          `Welcome back, ${student.name.trim()}! Please enter your password to login.`,
+          "success"
+        );
+        // Move focus to the password field so the student can type immediately
+        if (studentPassword) studentPassword.focus();
       }
     } catch (err) {
       console.error(err);

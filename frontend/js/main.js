@@ -293,7 +293,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const fpStep1             = document.getElementById("fpStep1");
   const fpStep2             = document.getElementById("fpStep2");
   const fpNewPassword       = document.getElementById("fpNewPassword");
+  const fpConfirmPasswordEl = document.getElementById("fpConfirmPassword");
   const studentAuthFormEl   = document.getElementById("studentAuthForm");
+
+  // ── Helper: set required on Step-2 inputs only when that step is visible ──
+  // This prevents the browser "invalid form control not focusable" error that
+  // fires when a required input inside a hidden container is submitted.
+  const setStep2Required = (enable) => {
+    if (fpNewPassword) {
+      if (enable) fpNewPassword.setAttribute("required", "");
+      else        fpNewPassword.removeAttribute("required");
+    }
+    if (fpConfirmPasswordEl) {
+      if (enable) fpConfirmPasswordEl.setAttribute("required", "");
+      else        fpConfirmPasswordEl.removeAttribute("required");
+    }
+  };
 
   // Track whether identity has been verified (step 1 passed)
   let fpIdentityVerified = false;
@@ -306,12 +321,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const fpRow = document.getElementById("forgotPasswordRow");
     if (fpRow) fpRow.style.display = "none";
     if (forgotPasswordPanel) forgotPasswordPanel.style.display = "block";
-    // Reset to Step 1
+    // Reset to Step 1 — Step-2 inputs must NOT be required while hidden
     fpIdentityVerified = false;
     fpVerifiedRollNo = "";
     fpVerifiedName   = "";
     if (fpStep1) fpStep1.style.display = "block";
     if (fpStep2) fpStep2.style.display = "none";
+    setStep2Required(false);  // <-- key fix: disable required on hidden step-2 fields
     if (fpSubmitBtnText) fpSubmitBtnText.textContent = "Verify Identity";
     if (forgotPasswordForm) forgotPasswordForm.reset();
     if (typeof lucide !== "undefined") lucide.createIcons();
@@ -321,6 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hideForgotPanel = () => {
     if (forgotPasswordPanel) forgotPasswordPanel.style.display = "none";
     if (studentAuthFormEl)   studentAuthFormEl.style.display = "block";
+    setStep2Required(false);  // clean up required attrs before hiding
     // Make sure we're in Login mode when returning
     switchToLoginMode();
     if (forgotPasswordForm) forgotPasswordForm.reset();
@@ -377,8 +394,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (fpSubmitBtn) fpSubmitBtn.disabled = true;
 
         try {
-          // We call the backend with dummy new_password to just verify identity.
-          // Actually, we verify by trying a fetch to the student lookup first.
           const res = await fetch(
             `${window.API_BASE_URL}/api/student/${encodeURIComponent(rollNo)}`
           );
@@ -400,9 +415,9 @@ document.addEventListener("DOMContentLoaded", () => {
           fpVerifiedName     = name;
           fpStep1.style.display = "none";
           fpStep2.style.display = "block";
+          setStep2Required(true);  // <-- now Step-2 inputs are visible, enable required
           if (fpSubmitBtnText) fpSubmitBtnText.textContent = "Reset Password";
-          const fpNewPwd = document.getElementById("fpNewPassword");
-          if (fpNewPwd) fpNewPwd.focus();
+          if (fpNewPassword) fpNewPassword.focus();
           if (typeof lucide !== "undefined") lucide.createIcons();
           showNotification(`Identity verified! Now set your new password, ${student.name.trim()}.`, "success");
 
@@ -415,8 +430,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       } else {
         // ── STEP 2: Set New Password ───────────────────────────────────────────
-        const newPwd     = (document.getElementById("fpNewPassword")?.value     || "");
-        const confirmPwd = (document.getElementById("fpConfirmPassword")?.value || "");
+        const newPwd     = (fpNewPassword?.value     || "");
+        const confirmPwd = (fpConfirmPasswordEl?.value || "");
 
         if (!newPwd || !confirmPwd) {
           showNotification("Please fill in both password fields.", "error");
@@ -435,7 +450,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (fpSubmitBtn) fpSubmitBtn.disabled = true;
 
         try {
-          const result = await postJson("/api/student/forgot-password", {
+          // ── Fix: use window.API_BASE_URL so the request goes to the backend ──
+          const result = await postJson(`${window.API_BASE_URL}/api/student/forgot-password`, {
             rollno:           fpVerifiedRollNo,
             name:             fpVerifiedName,
             new_password:     newPwd,
